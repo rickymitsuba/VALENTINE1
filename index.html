@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Who Loves More?</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1a1a2e;
+      --fg: #fef9f3;
+      --muted: #8b8b9e;
+      --card: #252542;
+      --border: #3d3d5c;
+      --shupu: #ff6b9d;
+      --shupu-glow: rgba(255, 107, 157, 0.4);
+      --bijoo: #4facfe;
+      --bijoo-glow: rgba(79, 172, 254, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    .display-font {
+      font-family: 'Pacifico', cursive;
+    }
+
+    /* Animated background */
+    .bg-animation {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.3;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .blob-1 {
+      width: 400px;
+      height: 400px;
+      background: var(--shupu);
+      top: -100px;
+      left: -100px;
+      animation-delay: 0s;
+    }
+
+    .blob-2 {
+      width: 350px;
+      height: 350px;
+      background: var(--bijoo);
+      bottom: -100px;
+      right: -100px;
+      animation-delay: -10s;
+    }
+
+    .blob-3 {
+      width: 200px;
+      height: 200px;
+      background: var(--shupu);
+      bottom: 30%;
+      right: 20%;
+      animation-delay: -5s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -30px) scale(1.1); }
+      66% { transform: translate(-20px, 20px) scale(0.9); }
+    }
+
+    /* Hearts floating */
+    .hearts-container {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .floating-heart {
+      position: absolute;
+      opacity: 0;
+      animation: rise 6s ease-in-out infinite;
+    }
+
+    @keyframes rise {
+      0% {
+        opacity: 0;
+        transform: translateY(100vh) scale(0.5) rotate(0deg);
+      }
+      10% {
+        opacity: 0.6;
+      }
+      90% {
+        opacity: 0.6;
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-100px) scale(1) rotate(360deg);
+      }
+    }
+
+    /* Custom slider styling */
+    .slider-container {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .slider-track {
+      width: 100%;
+      height: 24px;
+      background: var(--card);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .slider-fill {
+      height: 100%;
+      border-radius: 12px;
+      transition: width 0.15s ease-out;
+      position: relative;
+    }
+
+    .shupu-fill {
+      background: linear-gradient(90deg, #ff6b9d, #ff8fab);
+      box-shadow: 0 0 20px var(--shupu-glow);
+    }
+
+    .bijoo-fill {
+      background: linear-gradient(90deg, #4facfe, #00f2fe);
+      box-shadow: 0 0 20px var(--bijoo-glow);
+    }
+
+    /* Range input styling */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 24px;
+      background: transparent;
+      cursor: pointer;
+      position: absolute;
+      top: 0;
+      left: 0;
+      margin: 0;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: grab;
+      position: relative;
+      top: -4px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:active {
+      cursor: grabbing;
+      transform: scale(1.2);
+    }
+
+    .shupu-slider::-webkit-slider-thumb {
+      background: var(--shupu);
+      box-shadow: 0 0 15px var(--shupu-glow), 0 2px 8px rgba(0, 0, 0, 0.3);
+      border: 3px solid #fff;
+    }
+
+    .bijoo-slider::-webkit-slider-thumb {
+      background: var(--bijoo);
+      box-shadow: 0 0 15px var(--bijoo-glow), 0 2px 8px rgba(0, 0, 0, 0.3);
+      border: 3px solid #fff;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: grab;
+      border: 3px solid #fff;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .shupu-slider::-moz-range-thumb {
+      background: var(--shupu);
+      box-shadow: 0 0 15px var(--shupu-glow), 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .bijoo-slider::-moz-range-thumb {
+      background: var(--bijoo);
+      box-shadow: 0 0 15px var(--bijoo-glow), 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    input[type="range"]:focus {
+      outline: none;
+    }
+
+    input[type="range"]:focus-visible::-webkit-slider-thumb {
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+
+    /* Result display */
+    .result-box {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 24px 32px;
+      text-align: center;
+      border: 2px solid var(--border);
+      transition: all 0.4s ease;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .result-box.shupu-winning {
+      border-color: var(--shupu);
+      box-shadow: 0 0 40px var(--shupu-glow);
+    }
+
+    .result-box.bijoo-winning {
+      border-color: var(--bijoo);
+      box-shadow: 0 0 40px var(--bijoo-glow);
+    }
+
+    /* Percentage display */
+    .percentage {
+      font-size: 2.5rem;
+      font-weight: 800;
+      transition: all 0.2s;
+    }
+
+    .shupu-percent {
+      color: var(--shupu);
+      text-shadow: 0 0 20px var(--shupu-glow);
+    }
+
+    .bijoo-percent {
+      color: var(--bijoo);
+      text-shadow: 0 0 20px var(--bijoo-glow);
+    }
+
+    /* Winner animation */
+    @keyframes winner-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .winner-text {
+      animation: winner-pulse 1.5s ease-in-out infinite;
+    }
+
+    /* Entrance animations */
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-in {
+      animation: slideUp 0.8s ease-out forwards;
+      opacity: 0;
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.4s; }
+    .delay-4 { animation-delay: 0.6s; }
+    .delay-5 { animation-delay: 0.8s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .bg-blob,
+      .floating-heart,
+      .winner-text {
+        animation: none;
+      }
+      .animate-in {
+        animation: none;
+        opacity: 1;
+      }
+    }
+
+    /* Tie state */
+    .result-box.tie {
+      border-color: #a855f7;
+      box-shadow: 0 0 40px rgba(168, 85, 247, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="bg-animation">
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+  </div>
+
+  <!-- Floating Hearts -->
+  <div class="hearts-container" id="hearts"></div>
+
+  <!-- Main Content -->
+  <main class="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-8">
+    
+    <!-- Question Header -->
+    <header class="text-center mb-12 animate-in delay-1">
+      <h1 class="display-font text-3xl sm:text-4xl md:text-5xl mb-2" style="color: var(--fg);">
+        LETS SEE WHO LOVES MOREE?
+      </h1>
+      <div class="flex items-center justify-center gap-3 mt-4">
+        <span class="w-12 h-1 rounded-full" style="background: var(--shupu);"></span>
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="var(--shupu)">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+        <span class="w-12 h-1 rounded-full" style="background: var(--bijoo);"></span>
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="var(--bijoo)">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+      </div>
+    </header>
+
+    <!-- Sliders Container -->
+    <div class="w-full max-w-md space-y-10">
+      
+      <!-- Shupu Slider -->
+      <div class="animate-in delay-2">
+        <div class="flex justify-between items-center mb-3">
+          <label class="text-xl font-semibold flex items-center gap-2" style="color: var(--shupu);">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            Shupu
+          </label>
+          <span class="percentage shupu-percent" id="shupuPercent">50%</span>
+        </div>
+        <div class="slider-container">
+          <div class="slider-track">
+            <div class="slider-fill shupu-fill" id="shupuFill" style="width: 50%;"></div>
+          </div>
+          <input 
+            type="range" 
+            min="0" 
+            max="100" 
+            value="50" 
+            class="shupu-slider" 
+            id="shupuSlider"
+            aria-label="Shupu love level"
+          >
+        </div>
+      </div>
+
+      <!-- Bijoo Slider -->
+      <div class="animate-in delay-3">
+        <div class="flex justify-between items-center mb-3">
+          <label class="text-xl font-semibold flex items-center gap-2" style="color: var(--bijoo);">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            Bijoo
+          </label>
+          <span class="percentage bijoo-percent" id="bijooPercent">50%</span>
+        </div>
+        <div class="slider-container">
+          <div class="slider-track">
+            <div class="slider-fill bijoo-fill" id="bijooFill" style="width: 50%;"></div>
+          </div>
+          <input 
+            type="range" 
+            min="0" 
+            max="100" 
+            value="50" 
+            class="bijoo-slider" 
+            id="bijooSlider"
+            aria-label="Bijoo love level"
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Result Display -->
+    <div class="w-full max-w-md mt-12 animate-in delay-4">
+      <div class="result-box" id="resultBox">
+        <p class="text-xl sm:text-2xl font-semibold" id="resultText">
+          It's a tie! Equal love!
+        </p>
+      </div>
+    </div>
+
+    <!-- Love meter visual -->
+    <div class="mt-8 flex items-center gap-4 animate-in delay-5">
+      <div class="text-center">
+        <div class="w-16 h-32 rounded-full overflow-hidden bg-gray-800 relative" style="box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);">
+          <div class="absolute bottom-0 w-full transition-all duration-300 rounded-full" id="shupuMeter" style="height: 50%; background: linear-gradient(to top, #ff6b9d, #ff8fab);"></div>
+        </div>
+        <span class="text-sm mt-2 block" style="color: var(--shupu);">Shupu</span>
+      </div>
+      <div class="text-2xl font-bold" style="color: var(--muted);">VS</div>
+      <div class="text-center">
+        <div class="w-16 h-32 rounded-full overflow-hidden bg-gray-800 relative" style="box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);">
+          <div class="absolute bottom-0 w-full transition-all duration-300 rounded-full" id="bijooMeter" style="height: 50%; background: linear-gradient(to top, #4facfe, #00f2fe);"></div>
+        </div>
+        <span class="text-sm mt-2 block" style="color: var(--bijoo);">Bijoo</span>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // Initialize DOM elements first
+    const shupuSlider = document.getElementById('shupuSlider');
+    const bijooSlider = document.getElementById('bijooSlider');
+    const shupuFill = document.getElementById('shupuFill');
+    const bijooFill = document.getElementById('bijooFill');
+    const shupuPercent = document.getElementById('shupuPercent');
+    const bijooPercent = document.getElementById('bijooPercent');
+    const resultBox = document.getElementById('resultBox');
+    const resultText = document.getElementById('resultText');
+    const shupuMeter = document.getElementById('shupuMeter');
+    const bijooMeter = document.getElementById('bijooMeter');
+    const heartsContainer = document.getElementById('hearts');
+
+    // Initial values
+    let shupuValue = 50;
+    let bijooValue = 50;
+
+    // Update display function
+    function updateDisplay() {
+      // Clamp values
+      shupuValue = Math.max(0, Math.min(100, shupuValue));
+      bijooValue = Math.max(0, Math.min(100, bijooValue));
+
+      // Update fills
+      shupuFill.style.width = shupuValue + '%';
+      bijooFill.style.width = bijooValue + '%';
+
+      // Update percentages
+      shupuPercent.textContent = Math.round(shupuValue) + '%';
+      bijooPercent.textContent = Math.round(bijooValue) + '%';
+
+      // Update meters
+      shupuMeter.style.height = shupuValue + '%';
+      bijooMeter.style.height = bijooValue + '%';
+
+      // Update sliders
+      shupuSlider.value = shupuValue;
+      bijooSlider.value = bijooValue;
+
+      // Update result
+      updateResult();
+    }
+
+    // Result messages
+    const shupuMessages = [
+      "yeaaa Shupu loves Him moree!",
+      "Shupu's love is overflowing!",
+      "Shupu wins this round!",
+      "Him is one lucky person!",
+    ];
+
+    const bijooMessages = [
+      "hehe bijoo loves her moreeee!",
+      "Bijoo's heart is bursting!",
+      "Bijoo takes the lead!",
+      "Her is truly loved!",
+    ];
+
+    function updateResult() {
+      resultBox.classList.remove('shupu-winning', 'bijoo-winning', 'tie');
+
+      if (shupuValue > bijooValue) {
+        resultBox.classList.add('shupu-winning');
+        const randomMsg = shupuMessages[Math.floor(Math.random() * shupuMessages.length)];
+        resultText.innerHTML = `<span class="winner-text" style="color: var(--shupu);">${randomMsg}</span>`;
+        spawnHearts('shupu');
+      } else if (bijooValue > shupuValue) {
+        resultBox.classList.add('bijoo-winning');
+        const randomMsg = bijooMessages[Math.floor(Math.random() * bijooMessages.length)];
+        resultText.innerHTML = `<span class="winner-text" style="color: var(--bijoo);">${randomMsg}</span>`;
+        spawnHearts('bijoo');
+      } else {
+        resultBox.classList.add('tie');
+        resultText.innerHTML = `<span style="color: #a855f7;">It's a tie! Equal love!</span>`;
+      }
+    }
+
+    // Slider event handlers
+    shupuSlider.addEventListener('input', function() {
+      const newValue = parseInt(this.value);
+      const change = newValue - shupuValue;
+      
+      // Calculate new bijoo value (opposite change)
+      bijooValue = Math.max(0, Math.min(100, bijooValue - change));
+      shupuValue = newValue;
+      
+      updateDisplay();
+    });
+
+    bijooSlider.addEventListener('input', function() {
+      const newValue = parseInt(this.value);
+      const change = newValue - bijooValue;
+      
+      // Calculate new shupu value (opposite change)
+      shupuValue = Math.max(0, Math.min(100, shupuValue - change));
+      bijooValue = newValue;
+      
+      updateDisplay();
+    });
+
+    // Floating hearts
+    function createHeart(color) {
+      const heart = document.createElement('div');
+      heart.className = 'floating-heart';
+      heart.style.left = Math.random() * 100 + '%';
+      heart.style.animationDelay = Math.random() * 2 + 's';
+      heart.innerHTML = `
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="${color}">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+      `;
+      heartsContainer.appendChild(heart);
+      
+      setTimeout(() => heart.remove(), 6000);
+    }
+
+    // Spawn hearts based on winner
+    let heartInterval = null;
+    function spawnHearts(winner) {
+      if (heartInterval) return;
+      
+      const color = winner === 'shupu' ? '#ff6b9d' : '#4facfe';
+      
+      // Create initial burst
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => createHeart(color), i * 100);
+      }
+    }
+
+    // Continuous heart spawning
+    setInterval(() => {
+      if (shupuValue > bijooValue) {
+        createHeart('#ff6b9d');
+      } else if (bijooValue > shupuValue) {
+        createHeart('#4facfe');
+      } else {
+        createHeart('#a855f7');
+      }
+    }, 800);
+
+    // Touch feedback for mobile
+    function addTouchFeedback(slider, color) {
+      slider.addEventListener('mousedown', () => {
+        slider.style.transform = 'scale(1.02)';
+      });
+      slider.addEventListener('mouseup', () => {
+        slider.style.transform = 'scale(1)';
+      });
+      slider.addEventListener('touchstart', () => {
+        slider.style.transform = 'scale(1.02)';
+      });
+      slider.addEventListener('touchend', () => {
+        slider.style.transform = 'scale(1)';
+      });
+    }
+
+    addTouchFeedback(shupuSlider, 'var(--shupu)');
+    addTouchFeedback(bijooSlider, 'var(--bijoo)');
+
+    // Initialize display
+    updateDisplay();
+
+    // Keyboard accessibility
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'r' || e.key === 'R') {
+        shupuValue = 50;
+        bijooValue = 50;
+        updateDisplay();
+      }
+    });
+  </script>
+</body>
+</html>
